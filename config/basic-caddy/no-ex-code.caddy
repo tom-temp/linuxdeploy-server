@@ -1,0 +1,14 @@
+$NOEX_SNAME:443
+{
+    tls {
+        issuer zerossl 2c2cc3da47d334b7a5c099fbce177183 {
+            email liu.temp.1416@outlook.com
+            dns cloudflare "need change"
+        }
+        ciphers TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384 TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256 TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256
+        alpn http/1.1 h2
+    }
+    reverse_proxy 127.0.0.1:${PORT_codes} {
+       header_up X-Real-IP {request>headers>X-Forwarded-For}
+    }
+}

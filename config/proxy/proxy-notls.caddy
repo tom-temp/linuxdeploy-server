@@ -1,0 +1,26 @@
+# 无cf的代理
+:${PORT_notls}
+{
+    log {
+        level INFO
+        output file ${LOGS_DIR}/caddy-v2ray-local.log {
+            roll_size 10MB
+            roll_keep 10
+        }
+        format formatted "[{date}]-[{level}]: {request>remote_ip} ->[{request>host}+{request>uri}] & [{common_log}] = {request>headers>User-Agent}" {
+            time_key        date
+            time_format     wall
+        }
+    }
+    @mywebsocket {
+        path /da311aaecvejdxkuwxsdft
+        header Connection *Upgrade*
+        header Upgrade websocket
+    }
+    reverse_proxy @mywebsocket 127.0.0.1:${PORT_v2ray}
+    reverse_proxy 127.0.0.1:${PORT_web} {
+       # Send the true remote IP to Rocket, so that vaultwarden can put this in the
+       # log, so that fail2ban can ban the correct IP.
+       header_up X-Real-IP {request>headers>X-Forwarded-For}
+  }
+}

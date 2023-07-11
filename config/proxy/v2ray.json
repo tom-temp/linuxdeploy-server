@@ -1,0 +1,41 @@
+{
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {},
+    "stats": {},
+    "inbounds": [
+      {
+        "port": ${PORT_v2ray},
+        "protocol": "vmess",
+        "settings": {
+          "clients": [
+            {
+              "id": ${v2ray_id},
+              "alterId": 4
+            }
+          ]
+        },
+        "tag": "in-0",
+        "streamSettings": {
+          "network": "ws",
+          "security": "aes-128-gcm",
+          "wsSettings": {
+            "path": ${v2ray_path}
+          }
+        },
+        "listen": "127.0.0.1"
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "direct",
+        "protocol": "freedom",
+        "settings": {}
+      }
+    ],
+    "routing": {},
+    "policy": {},
+    "reverse": {},
+    "transport": {}
+  }

@@ -1,0 +1,10 @@
+# 我的路由地址123
+# 参考：https://en.wikipedia.org/wiki/Reserved_IP_addresses
+
+DOMAIN-KEYWORD,lfamily.top
+DOMAIN-KEYWORD,ompserver.ml
+# IP-CIDR,192.168.1.1/16
+# IP-CIDR,10.1.1.1/8
+# IP-CIDR,172.16.1.1/12
+# DOMAIN-KEYWORD,zhananxs.com
+# DOMAIN-KEYWORD,nginx.lan2

@@ -1,0 +1,13 @@
+{
+    # http_port  8080
+    email liu.temp.1416@outlook.com
+    admin      127.0.0.1:49999
+    log {
+        format console {
+            time_key date
+            time_format "Jan/02/2006:15:04:05 -0700"
+        }
+	}
+}
+
+import sites-enabled/*

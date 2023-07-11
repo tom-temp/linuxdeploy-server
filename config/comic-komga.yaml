@@ -1,0 +1,24 @@
+komga:
+  libraries-scan-cron: "0 0 * * * ?"  # periodic scan every 8 hours
+  # libraries-scan-cron: "-"            # disable periodic scan
+  libraries-scan-startup: true          # scan libraries at startup
+  libraries-scan-directory-exclusions:  # patterns to exclude directories from the scan
+    - "#recycle" # synology NAS recycle bin
+    - "@eaDir"   # synology NAS index/metadata folders
+    - "@Recycle" # QNAP NAS recycle bin
+    - ".filerun.thumbnails"
+    - ".filerun.trash"
+  # remember-me:
+  #   key: changeMe!    # required to activate the remember-me auto-login via cookies
+  #   validity: 30d     # validity of the cookie in seconds, here 30 days
+  session-timeout: 7d # session timeout, here 7 days
+  # database:
+  #   file: ${komga.config-dir}/database.sqlite
+  # cors.allowed-origins:
+  #   - http://localhost:8081
+  #   - http://localhost:8082
+  delete-empty-collections: true
+  delete-empty-read-lists: true
+server:
+  port: ${Port}
+  servlet.context-path: / # 设置成为nginx或者caddy的二级目录

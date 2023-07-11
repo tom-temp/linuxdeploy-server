@@ -1,0 +1,66 @@
+${NAME_vault}:443
+{
+	log {
+		level INFO
+		output file ${LOGS_DIR}/caddy-vault.log {
+			roll_size 10MB
+			roll_keep 10
+		}
+		format formatted "[{date}-{level}]: [{request>headers>X-Forwarded-For} - {request>remote_ip}]->[{request>host}+{request>uri}] & [{common_log}] = {request>headers>User-Agent}" {
+			time_key date
+			time_format wall
+		}
+	}
+
+	# 如果你想通过 ACME（Let's Encrypt 或 ZeroSSL）获获取证书，请取消注释
+	# tls /www/00-config/ssl/fullchain.pem /www/00-config/ssl/key.pem
+
+	tls {
+		issuer zerossl 2c2cc3da47d334b7a5c099fbce177183 {
+			email liu.temp.1416@outlook.com
+			# alt_tlsalpn_port 2096
+			# alt_http_port 2086
+		}
+	}
+	tls {
+		protocols tls1.2 tls1.3
+		ciphers TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256 TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384 TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256 TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+	}
+	# HSTS (63072000 seconds)
+	header / Strict-Transport-Security "max-age=63072000"
+
+	# 此设置可能会在某些浏览器上出现兼容性问题（例如，在 Firefox 上下载附件）
+	# 如果遇到问题，请尝试禁用此功能
+	encode gzip
+
+	# 取消注释以提高安全性（警告：只有在你了解其影响的情况下才能使用！）
+	# header {
+	#     # 启用 HTTP Strict Transport Security (HSTS)
+	#     Strict-Transport-Security "max-age=31536000;"
+	#     # 启用 cross-site filter (XSS) 并告诉浏览器阻止检测到的攻击
+	#     X-XSS-Protection "1; mode=block"
+	#     # 禁止在框架内呈现网站（clickjacking protection）
+	#     X-Frame-Options "DENY"
+	#     # 防止搜索引擎编制索引（可选）
+	#     X-Robots-Tag "none"
+	#     # 服务器名称移除
+	#     -Server
+	# }
+
+	# 取消注释以仅允许从本地网络访问管理界面
+	@insecureadmin {
+	   not remote_ip 192.168.0.0/16 172.16.0.0/12 10.0.0.0/8
+	   path /admin*
+	}
+	redir @insecureadmin /
+
+	# Notifications 重定向到 websockets 服务器
+	reverse_proxy /notifications/hub 127.0.0.1:${PORT_vauws}
+
+	reverse_proxy 127.0.0.1:${PORT_vault} {
+		# 把真实的远程 IP 发送给 Rocket，让 vaultwarden 把其放在日志中
+		# 这样 fail2ban 就可以阻止正确的 IP 了
+		# header_up X-Real-IP {remote_host}
+		header_up X-Real-IP {CF-CONNECTING-IP}
+	}
+}

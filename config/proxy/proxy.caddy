@@ -1,0 +1,72 @@
+# 有cf的代理
+${OUT4_SNAME}:443
+{
+    log {
+        level INFO
+        output file ${LOGS_DIR}/caddy-${OUT4_SNAME}.log {
+            roll_size 10MB
+            roll_keep 10
+        }
+        format formatted "[{date}]-[{level}]: [{request>headers>X-Forwarded-For} - {request>remote_ip}]->[{request>host}+{request>uri}] & [{common_log}] = {request>headers>User-Agent}" {
+            time_key        date
+            time_format     wall
+        }
+    }
+
+    tls {
+        issuer zerossl 2c2cc3da47d334b7a5c099fbce177183 {
+            email liu.temp.1416@outlook.com
+            disable_tlsalpn_challenge
+            # disable_http_challenge
+        }
+        ciphers TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384 TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256 TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256
+        alpn http/1.1 h2
+    }
+
+    @mywebsocket {
+        path /da311aaecvejdxkuwxsdft
+        header Connection *Upgrade*
+        header Upgrade websocket
+    }
+    reverse_proxy @mywebsocket 127.0.0.1:${PORT_v2ray}
+    reverse_proxy 127.0.0.1:${PORT_web} {
+       # Send the true remote IP to Rocket, so that vaultwarden can put this in the
+       # log, so that fail2ban can ban the correct IP.
+       header_up X-Real-IP {request>headers>X-Forwarded-For}
+  }
+}
+
+${OUT6_SNAME}:443
+{
+    log {
+        level INFO
+        output file ${LOGS_DIR}/caddy-${OUT6_SNAME}.log {
+            roll_size 10MB
+            roll_keep 10
+        }
+        format formatted "[{date}]-[{level}]: {request>remote_ip} ->[{request>host}+{request>uri}] & [{common_log}] = {request>headers>User-Agent}" {
+            time_key        date
+            time_format     wall
+        }
+    }
+    tls {
+        issuer zerossl 2c2cc3da47d334b7a5c099fbce177183 {
+            email liu.temp.1416@outlook.com
+            disable_tlsalpn_challenge
+            # disable_http_challenge
+        }
+        ciphers TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384 TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256 TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256
+        alpn http/1.1 h2
+    }
+    @mywebsocket {
+        path /da311aaecvejdxkuwxsdft
+        header Connection *Upgrade*
+        header Upgrade websocket
+    }
+    reverse_proxy @mywebsocket 127.0.0.1:${PORT_v2ray}
+    reverse_proxy 127.0.0.1:${PORT_web} {
+       # Send the true remote IP to Rocket, so that vaultwarden can put this in the
+       # log, so that fail2ban can ban the correct IP.
+       header_up X-Real-IP {request>headers>X-Forwarded-For}
+  }
+}

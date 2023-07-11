@@ -1,0 +1,25 @@
+:${port_allweb}
+{
+	log {
+		level INFO
+		output file ${LOGS_DIR}/caddy-allweb.log {
+			roll_size 10MB
+			roll_keep 10
+		}
+	}
+	@forbidden {
+		path /db
+		path /db/*
+		path /data/*
+		path /templates/*
+		path /functions/*
+		path /controller/*
+        path /config.simple.php
+        path /config.php
+	}
+	respond @forbidden 404
+
+    root * ${allweb_dir}
+    php_fastcgi 127.0.0.1:9000
+    file_server
+}
